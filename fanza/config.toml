@@ -1,0 +1,83 @@
+# iKOA的配置文件
+
+[download]
+## 序列码
+serial = "DLFO2-MEEZ4-XSC92-GUDQX-ZM5HL"
+## 下载位置，相对和绝对路径：
+##  - Windows: D:\test 或 D:/test
+##  - macOS, Linux: /home/user/test
+path = 'downloads'
+## 创建子文件夹
+subfolder = true
+## 下载封面图片（大）
+cover = true
+## 下载封面图片（小）
+miniature = true
+
+[behavior]
+## policy <0-2>; 行为准则
+## = 0; 1个视频结果仅询问是否使用了 <num:> 标签；询问是否有多个视频part
+## = 1; 1个视频结果永不询问；询问是否有多个视频part
+## = 2; 1个视频结果永不询问；永远不要问是否有多个视频part（下载所有）
+policy = 2
+## motd = <...>; 设置是否不显示“Message of The Day”输出则在屏幕上（每日提示）
+motd = "iKu Original Adult - 2020/03/28"
+## salesman <true,false>; 仅提示输入一项内容ID
+salesman = false
+## exit <true,false>; 执行完成后窗口就退出了
+exit = true
+## beep <true,false>; 在提示选择视频时发出声音（响铃字符）
+beep = false
+
+[parts]
+## 文件{suffix}数.文件扩展（例如：test-1.mp4, test-2.mp4 ..）
+suffix = "-"
+## 多个视频part合并成一个
+merge = false
+## 多个视频part合并成一个（M3U文件）
+m3u_merge = false
+## 根据文件名合并part（正则表达式）
+m3u_regex = '(.*?)-(?:[Pp]art-?)?(\d+)'
+## 合并之前，检查列出的M3U文件是否互相兼容（只有大咪咪）
+m3u_strict = true
+
+[output]
+## 无损视频格式：mp4（或 mkv 测试版功能）
+video_format = "mp4"
+## 将moov atom移动到文件顶部，仅 mp4 (ffmpeg: -movflags +faststart)
+web_optimized = true
+## 测试版功能：给视频文件添加封面（仅 mp4 和 mkv 格式）
+cover_art = true
+## 测试版功能：移除大咪咪电影封面中的两侧白边框 (147x200)
+crop_cover_art = true
+## 将FFmpeg命令的输出记录到文件中
+ffmpeg_log = false
+
+[connection]
+## job <1-99>; 同时下载数量
+## 值太高可能会减慢下载速度
+## 视频高清（3MB 分片）：16 (~50 MB/s), 32 (~100 MB/s)
+## -> 默认值：16
+job = 32
+## buffer <1-..>; 视频码流缓冲区的大小（分片数量）
+## 高达视频缓冲时，下载器可容纳多少个分片
+## 这个值是跟同时下载数量 {job} 相关的
+## 每个分片通常是3MB，要是这个值是32的话，缓冲区会高达 3MB * 32 = 96MB
+## -> 默认值：2 * {job} + {job} / 2
+buffer = 0
+## timeout <1-99>; 单次请求超时时间的秒数
+timeout = 15
+## retry <0-99>; 最大尝试次数
+retry = 30
+## backoff <0.0-BACKOFF_MAX>; 退避系数
+## 等待的秒数第一次失败之后根据公式：
+## 等待的秒数 = {backoff} * (2 ** ({次数} - 1))
+## -> 默认值： 0.1 = [0.1秒, 0.2秒, 0.4秒 。。]
+backoff = 0.1
+
+[proxy]
+## proxy [socks5://][127.0.0.1:]<1-65535>; 代理
+## 协议：socks4, socks5, http, https
+socket = "socks5://127.0.0.1:9000"
+## 设置是否启用代理
+enable = false
