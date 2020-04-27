@@ -12,10 +12,10 @@
             "description": "the ID of the team drive"
         },
         "SA_JSON_1": {
-            "description": "paste the content of the service_account json file in one line,do not add line endings"
+            "description": "follow the tips and FAQ in README.md"
         },
         "SA_JSON_2": {
-            "description": "paste the content of the service_account json file in one line,do not add line endings"
+            "description": "follow the tips and FAQ in README.md"
         },
         "RCLONE_DESTINATION": {
             "description": "the path where stores the downloaded data,for example:/ikuuu,don't add a \"/\" at the end"

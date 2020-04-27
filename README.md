@@ -24,7 +24,7 @@ Click the button below to deploy to heroku using your own heroku account.
 
 ### Tips:
 1. Be careful filling in the "herokuApp" field when deploy the app, otherwise your app can't work properly.
-2. The format of "SA_JSON" field should look like the first line below(delete any spaces between each line,but don't add any line break between each line,then paste it into one line):  
+2. The format of "SA_JSON" field should look like the first line below(delete any spaces between each line,but don't add any **line break** between each line,then paste it into one line):  
   {"type": "service_account","project_id": "xxxxx","private_key_id":"xxxxx",......}&nbsp;&nbsp;**√**  
   {"type": "service_account",\n"project_id": "xxxxx",\n"private_key_id":"xxxxx",......}&nbsp;&nbsp;**x**
 3. You can ssh into the server from command line:  `heroku ps:exec -a  yourAppName`. [See more details](https://devcenter.heroku.com/articles/heroku-cli)
@@ -37,13 +37,15 @@ Click the button below to deploy to heroku using your own heroku account.
 
 
 ### FAQ:
-* Q:Why does rclone failed to upload files to google team drive?  
-  A:First, You need to config "TEAM_DRIVE_ID" "RCLONE_DESTINATION", "LOG_PATH", "SA_JSON_1", "SA_JSON_2" properly.  
-  &nbsp;&nbsp;&nbsp;And then check whether the two SA has been added into your team drive as a member with write permission at least(contributor or content manager).
-* Q:What does "codenotenough" mean in the csv file?  
-  A:It means you need to get a valid "SERIAL_CODE".
+* Q: Why does rclone failed to upload files to google team drive?  
+  A: First, You need to config "TEAM_DRIVE_ID" "RCLONE_DESTINATION", "LOG_PATH", "SA_JSON_1", "SA_JSON_2" properly.  
+  &nbsp;&nbsp;&nbsp;&nbsp;And then check whether the two SA has been added into your team drive as a member with write permission at least(contributor or content manager).
+* Q: What does "codenotenough" mean in the csv file?  
+  A: It means you need to get a valid "SERIAL_CODE".
 * Q: Can ikoa-web bypass google drive's 750GB per day upload limit?  
   A: Yes, This is why you need config two SA.
+* Q: How should I do if I can't config the SA_JSON field correctly?  
+  A: Check whether the one line json string matches exactly **2374** characters.
 
 ## License
 **ikoa-web** is released under the [MIT License](LICENSE)
