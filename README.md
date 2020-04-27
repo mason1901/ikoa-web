@@ -24,8 +24,9 @@ Click the button below to deploy to heroku using your own heroku account.
 
 ### Tips:
 1. Be careful filling in the "herokuApp" field when deploy the app, otherwise your app can't work properly.
-2. The format of "SA_JSON" field should look like the line below(delete any spaces between each JSON key, and paste it into one line):  
-  {"type": "service_account","project_id": "xxxxx","private_key_id":"xxxxx",......}
+2. The format of "SA_JSON" field should look like the first line below(delete any spaces between each line,but don't add any line break between each line,then paste it into one line):  
+  {"type": "service_account","project_id": "xxxxx","private_key_id":"xxxxx",......}&nbsp;&nbsp;**√**  
+  {"type": "service_account",\n"project_id": "xxxxx",\n"private_key_id":"xxxxx",......}&nbsp;&nbsp;**x**
 3. You can ssh into the server from command line:  `heroku ps:exec -a  yourAppName`. [See more details](https://devcenter.heroku.com/articles/heroku-cli)
 4. You can update the iKOA version in the folder called fanza(fork the repo first, and replace the iKOA with a newer version,change the repository field in [app.json](app.json), then deploy your own repo to heroku).
 5. The app will be restarted automatically once every 24 hours continuous running due to heroku's policy. [See more details](https://devcenter.heroku.com/articles/dynos#restarting)
