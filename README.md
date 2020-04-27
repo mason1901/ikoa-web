@@ -29,19 +29,20 @@ Click the button below to deploy to heroku using your own heroku account.
 3. You can ssh into the server from command line:  `heroku ps:exec -a  yourAppName`. [See more details](https://devcenter.heroku.com/articles/heroku-cli)
 4. You can update the iKOA version in the folder called fanza(fork the repo first, and replace the iKOA with a newer version,change the repository field in [app.json](app.json), then deploy your own repo to heroku).
 5. The app will be restarted automatically once every 24 hours continuous running due to heroku's policy. [See more details](https://devcenter.heroku.com/articles/dynos#restarting)
-6. the format of num ID:"ABC-123" or "ABC-123,abc-124,ABC-125"(case insensitive)
-7. the format of cid ID:"abc00123" or "abc00123,abc00124,abcc00125"(case insensitive)
+6. the format of num ID:"ABC-123" or "ABC-123,abc-124,ABC-125 and more"(comma separated,case insensitive)
+7. the format of cid ID:"abc00123" or "abc00123,abc00124,abc00125 and more"(comma separated,case insensitive)
 8. If you submit many IDs one time, you can put a tag on these IDs, so they can be downloaded under the same folder.(the tag length should be no more than 10 characters, be free to use chinese or japanese name or any other language)
 9. In theory, ikoa-web can upload no more than 1.5TB data to your google team drive per day.
 
 
 ### FAQ:
-* Why does rclone failed to upload files to google team drive?  
-  You need to config "TEAM_DRIVE_ID" "RCLONE_DESTINATION", "LOG_PATH", "SA_JSON_1", "SA_JSON_2" properly.
-* What does "codenotenough" mean in the csv file?  
-  It means you need to get a valid "SERIAL_CODE".
-* Can ikoa-web bypass google drive's 750GB per day upload limit?  
-  Yes, This is why you need config two SA.
+* Q:Why does rclone failed to upload files to google team drive?  
+  A:First, You need to config "TEAM_DRIVE_ID" "RCLONE_DESTINATION", "LOG_PATH", "SA_JSON_1", "SA_JSON_2" properly.  
+  &nbsp;&nbsp;&nbsp;And then check whether the two SA has been added into your team drive as a member with write permission at least(contributor or content manager).
+* Q:What does "codenotenough" mean in the csv file?  
+  A:It means you need to get a valid "SERIAL_CODE".
+* Q: Can ikoa-web bypass google drive's 750GB per day upload limit?  
+  A: Yes, This is why you need config two SA.
 
 ## License
 **ikoa-web** is released under the [MIT License](LICENSE)
