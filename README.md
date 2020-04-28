@@ -6,6 +6,7 @@
 * Auto upload to google drive after download finished.
 * Show the download and upload progress in web page real-time.
 * Batch downloading.
+* Task Queue
 * Naming IDs with a tag.
 * Forcing https.
 * Comprehensive download statistics data(csv format).
@@ -46,6 +47,8 @@ Click the button below to deploy to heroku using your own heroku account.
   A: Yes, This is why you need config two SA.
 * Q: How should I do if I can't config the SA_JSON field correctly?  
   A: Check whether the one line json string matches exactly **2374** characters.
+* Q: Why does the app shutdown suddenly before all tasks finished sometimes?  
+  A: Please create an issue and paste the log.
 
 ## License
 **ikoa-web** is released under the [MIT License](LICENSE)
