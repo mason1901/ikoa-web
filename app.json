@@ -37,12 +37,15 @@
             "generator": "secret"
         },
         "SERIAL_CODE": {
-            "description": "the iKOA serial code, the default value is a fake serial code, just keep it if you don't have a valid one",
-            "value": "DLFO2-MEEZ4-XSC92-GUDQX-ZM5HL"
+            "description": "Please input a valid serial code, otherwise you can't download anything"
         },
         "MERGE_BOOL": {
             "description": "merge if a video containing multiple parts, true or false",
             "value": "false"
+        },
+        "MONTHLY_ONLY_BOOL": {
+            "description": "Only download videos which belong to monthly, true or false",
+            "value": "true"
         }
 
     },

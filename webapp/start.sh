@@ -2,9 +2,7 @@
 
 
 if [[ -n $TEAM_DRIVE_ID && -n $RCLONE_DESTINATION && -n $LOG_PATH && -n $SA_JSON_1 && -n $SA_JSON_2 && -n $SERIAL_CODE && -n $MERGE_BOOL ]]; then
-    if [[ $SERIAL_CODE != "DLFO2-MEEZ4-XSC92-GUDQX-ZM5HL" ]]; then
-        sed -i "/^serial/c\serial = \"$SERIAL_CODE\"" /app/fanza/config.toml
-    fi   
+    sed -i "/^serial/c\serial = \"$SERIAL_CODE\"" /app/fanza/config.toml   
     echo "team_drive = $TEAM_DRIVE_ID" >> /app/fanza/rclone_1.conf
     echo "team_drive = $TEAM_DRIVE_ID" >> /app/fanza/rclone_2.conf
     echo "$SA_JSON_1" > /app/fanza/service_account_1.json
