@@ -12,7 +12,7 @@ NonMonthlyDownloadCount=0
 cd /app/fanza || exit
 
 remainCode_start=$(./iKOA -E cid:118abp12345 | grep "剩余")
-codeQuota=$(echo "$remainCode_start" | grep -o -E '[0-9]+')
+codeQuota=$(echo "$remainCode_start" | grep -oE '[0-9]+')
 if [[ $codeQuota -gt 0 ]]; then
     echo "serialCode:${remainCode_start}"
 else
@@ -62,7 +62,7 @@ test -n "$TAG" && dirArgs="downloads/${TAG}" || dirArgs="downloads"
 for i in "${!idList[@]}"; do
     FLAG=0
     sleep 2
-    grepOutput=$(curl -sL --retry 5 "https://v2.mahuateng.cf/isMonthly/${idList[i]}" | grep -o '\"monthly\":\(true\|false\)')
+    grepOutput=$(curl -sL --retry 5 "https://v2.mahuateng.cf/isMonthly/${idList[i]}" | grep -oE '\"monthly\":(true|false)')
     test -n "$grepOutput" && isMonthly=$(echo "$grepOutput" | cut -d ":" -f2) || isMonthly="queryfailed"
     echo "Current id:${idList[i]} taskid:${TaskId} Current task progress:$((i + 1))/${idListLen} tag:${TAG:-None} Monthly:${isMonthly}"
     sleep 1
@@ -90,7 +90,7 @@ for i in "${!idList[@]}"; do
     if [[ $ikoaOutput =~ "已下载" ]]; then
         test $FLAG -eq 1 && NonMonthlyDownloadCount=$((NonMonthlyDownloadCount + 1));updateWaitTime
         DownloadCount=$((DownloadCount + 1))
-        bitrate=$(echo "$ikoaOutput" | grep -o '\(6000\|3000\|300\|500\|1000\|1500\|2000\|4000\)kbps')
+        bitrate=$(echo "$ikoaOutput" | grep -oE '(6000|3000|300|500|1000|1500|2000|4000)kbps')
         multipart=$(echo "$ikoaOutput" | grep -o "部分=\[0\]" | grep -o "0" || echo 1)
         filePath=$(find "$dirArgs" -mindepth 1 -maxdepth 1 -type d -printf '%T@ %p\n' | sort -k1 -r -n | head -1 | cut -d ' ' -f2)
         cid=$(basename "$filePath")
