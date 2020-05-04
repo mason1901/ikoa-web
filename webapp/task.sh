@@ -45,7 +45,7 @@ sleepHandler() {
         while [[ $sleepTime -ge 0 ]]; do
             printf '请求过快，需要等待 %02dh:%02dm:%02ds\n' $((sleepTime/3600)) $((sleepTime%3600/60)) $((sleepTime%60))
             sleepTime=$((sleepTime - 1))
-            sleep 0.98
+            sleep 1
         done
     fi
 }
@@ -56,7 +56,7 @@ if [[ $TaskId -eq 0 ]]; then
     echo "$NAME" > FILENAME_VAR.txt
     mkdir -p backup
 fi
-read -r fileName < FILENAME_VAR.txt
+test -e FILENAME_VAR.txt && read -r fileName < FILENAME_VAR.txt || exit 1
 test -n "$TAG" && dirArgs="downloads/${TAG}" || dirArgs="downloads"
 
 for i in "${!idList[@]}"; do
@@ -88,7 +88,7 @@ for i in "${!idList[@]}"; do
     fi
       
     if [[ $ikoaOutput =~ "已下载" ]]; then
-        test $FLAG -eq 1 && NonMonthlyDownloadCount=$((NonMonthlyDownloadCount + 1))
+        test $FLAG -eq 1 && NonMonthlyDownloadCount=$((NonMonthlyDownloadCount + 1));updateWaitTime
         DownloadCount=$((DownloadCount + 1))
         bitrate=$(echo "$ikoaOutput" | grep -o '\(6000\|3000\|300\|500\|1000\|1500\|2000\|4000\)kbps')
         multipart=$(echo "$ikoaOutput" | grep -o "部分=\[0\]" | grep -o "0" || echo 1)
@@ -96,29 +96,25 @@ for i in "${!idList[@]}"; do
         cid=$(basename "$filePath")
         fileSize=$(du -m "$filePath" | cut -f1)
         echo "${idList[i]},${cid},${TaskId},succeed,${fileSize}M,${bitrate},${multipart},${TAG},${isMonthly}" >> "$fileName"
-        echo "id:${idList[i]} cid:${cid} taskid:${TaskId} status:succeed size:${fileSize}M bitrate:${bitrate} multipart:${multipart} tag:${TAG:-None} Monthly:${isMonthly}"
-        if [[ $codeQuota -ge 45 ]]; then
-            if [[ $((DownloadCount % 4)) -eq 0 || $i -eq $((idListLen - 1)) ]]; then 
-                sleep 2
-                while true
-                do
-                    rclone --config="$RcloneConf" move downloads "DRIVE:$RCLONE_DESTINATION" --drive-stop-on-upload-limit --drive-chunk-size 64M --exclude-from rclone-exclude-file.txt -v --stats-one-line --stats=1s
-                    rc=$?
-                    if [[ $rc -ne 7 ]]; then
-                        break
+        echo "id:${idList[i]} cid:${cid} taskid:${TaskId} status:succeed size:${fileSize}M bitrate:${bitrate} multipart:${multipart} tag:${TAG:-None} Monthly:${isMonthly}"   
+        if [[ $((DownloadCount % 4)) -eq 0 || $i -eq $((idListLen - 1)) || $codeQuota -lt 45 ]]; then 
+            sleep 2
+            while true
+            do
+                rclone --config="$RcloneConf" move downloads "DRIVE:$RCLONE_DESTINATION" --drive-stop-on-upload-limit --drive-chunk-size 64M --exclude-from rclone-exclude-file.txt -v --stats-one-line --stats=1s
+                rc=$?
+                if [[ $rc -ne 7 ]]; then
+                    break
+                else
+                    if [[ $RcloneConf == "rclone_1.conf" ]]; then
+                        RcloneConf="rclone_2.conf"
                     else
-                        if [[ $RcloneConf == "rclone_1.conf" ]]; then
-                            RcloneConf="rclone_2.conf"
-                        else
-                            RcloneConf="rclone_1.conf"
-                        fi
+                        RcloneConf="rclone_1.conf"
                     fi
-                    sleep 10               
-                done
-            fi
-        else
-            rclone --config="$RcloneConf" move downloads "DRIVE:$RCLONE_DESTINATION" --drive-stop-on-upload-limit --drive-chunk-size 64M --exclude-from rclone-exclude-file.txt -v --stats-one-line --stats=1s
-        fi
+                fi
+                sleep 10
+            done
+        fi    
         elapsed=$((SECONDS - startTime))
         echo "$elapsed" > TIME_VAR.txt
     elif [[ $ikoaOutput =~ "序列码额度为0" ]]; then
@@ -128,7 +124,7 @@ for i in "${!idList[@]}"; do
         echo "${idList[i]},,${TaskId},notfound,,,,${TAG},${isMonthly}" >> "$fileName"
         echo "id:${idList[i]} taskid:${TaskId} status:notfound tag:${TAG:-None} Monthly:${isMonthly}"
     else
-        test $FLAG -eq 1 && NonMonthlyDownloadCount=$((NonMonthlyDownloadCount + 1))
+        test $FLAG -eq 1 && NonMonthlyDownloadCount=$((NonMonthlyDownloadCount + 1));updateWaitTime
         echo "${idList[i]},,${TaskId},failed,,,,${TAG},${isMonthly}" >> "$fileName"
         echo "id:${idList[i]} taskid:${TaskId} status:failed tag:${TAG:-None} Monthly:${isMonthly}"
         elapsed=$((SECONDS - startTime))

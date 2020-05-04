@@ -47,6 +47,8 @@ Click the button below to deploy to heroku using your own heroku account.
 
 
 ### FAQ:
+* Q: How can I change the config var after deployment?  
+  A: You can change the config var in th settings page of the dashboard. [See more details](https://devcenter.heroku.com/articles/config-vars#managing-config-vars)
 * Q: Why does rclone failed to upload files to google team drive?  
   A: First, You need to config "TEAM_DRIVE_ID" "RCLONE_DESTINATION", "LOG_PATH", "SA_JSON_1", "SA_JSON_2" properly.  
   &nbsp;&nbsp;&nbsp;&nbsp;And then check whether the two SA has been added into your team drive as a member with write permission at least(contributor or content manager).
