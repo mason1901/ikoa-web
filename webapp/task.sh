@@ -123,6 +123,8 @@ for i in "${!idList[@]}"; do
     elif [[ $ikoaOutput =~ "查询无结果" ]]; then
         echo "${idList[i]},,${TaskId},notfound,,,,${TAG},${isMonthly}" >> "$fileName"
         echo "id:${idList[i]} taskid:${TaskId} status:notfound tag:${TAG:-None} Monthly:${isMonthly}"
+        elapsed=0
+        echo "$elapsed" > TIME_VAR.txt
     else
         test $FLAG -eq 1 && NonMonthlyDownloadCount=$((NonMonthlyDownloadCount + 1));updateWaitTime
         echo "${idList[i]},,${TaskId},failed,,,,${TAG},${isMonthly}" >> "$fileName"
