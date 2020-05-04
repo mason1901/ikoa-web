@@ -12,7 +12,7 @@ NonMonthlyDownloadCount=0
 cd /app/fanza || exit
 
 remainCode_start=$(./iKOA -E cid:118abp12345 | grep "剩余")
-codeQuota=$(echo "$remainCode_start" | grep -o '[[:digit:]]')
+codeQuota=$(echo "$remainCode_start" | grep -o -E '[0-9]+')
 if [[ $codeQuota -gt 0 ]]; then
     echo "serialCode:${remainCode_start}"
 else
