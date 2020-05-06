@@ -14,6 +14,7 @@ RUN apk update && apk add --no-cache \
     tar \
     procps \
     findutils \
+    grep  \
     tzdata \
     python3 \   
     py3-pip \

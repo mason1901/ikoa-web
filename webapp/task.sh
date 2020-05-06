@@ -8,20 +8,17 @@ IFS="," read -r -a idList <<< "$ID"
 idListLen=${#idList[@]}
 RcloneConf="rclone_1.conf"
 DownloadCount=0
-NonMonthlyDownloadCount=0
 cd /app/fanza || exit
+codeQuota=$(./iKOA -E cid:118abp12345 | grep -oP '(?<=剩余\s)[0-9]+(?=\s次)')
 
-remainCode_start=$(./iKOA -E cid:118abp12345 | grep "剩余")
-codeQuota=$(echo "$remainCode_start" | grep -oE '[0-9]+')
 if [[ $codeQuota -gt 0 ]]; then
-    echo "serialCode:${remainCode_start}"
+    echo "序列码额度剩余 ${codeQuota} 次"
 else
     echo "序列码额度为0，不能下载!"
     exit 1
 fi
 
 updateWaitTime() {
-    codeQuota=$((codeQuota - NonMonthlyDownloadCount))
     if [[ $codeQuota -ge 1 && $codeQuota -lt 10 ]]; then
         waitTime=3600
     elif [[ $codeQuota -ge 10 && $codeQuota -lt 45 ]]; then
@@ -62,8 +59,7 @@ test -n "$TAG" && dirArgs="downloads/${TAG}" || dirArgs="downloads"
 for i in "${!idList[@]}"; do
     FLAG=0
     sleep 2
-    grepOutput=$(curl -sL --retry 5 "https://v2.mahuateng.cf/isMonthly/${idList[i]}" | grep -oE '\"monthly\":(true|false)')
-    test -n "$grepOutput" && isMonthly=$(echo "$grepOutput" | cut -d ":" -f2) || isMonthly="queryfailed"
+    isMonthly=$(curl -sL --retry 5 "https://v2.mahuateng.cf/isMonthly/${idList[i]}" | grep -oP '(?<=\"monthly\":)(true|false)(?=\,)' || echo "queryfailed")
     echo "Current id:${idList[i]} taskid:${TaskId} Current task progress:$((i + 1))/${idListLen} tag:${TAG:-None} Monthly:${isMonthly}"
     sleep 1
     if [[ $isMonthly == "true" ]]; then
@@ -88,10 +84,16 @@ for i in "${!idList[@]}"; do
     fi
       
     if [[ $ikoaOutput =~ "已下载" ]]; then
-        test $FLAG -eq 1 && NonMonthlyDownloadCount=$((NonMonthlyDownloadCount + 1));updateWaitTime
         DownloadCount=$((DownloadCount + 1))
-        bitrate=$(echo "$ikoaOutput" | grep -oE '(6000|3000|300|500|1000|1500|2000|4000)kbps')
-        multipart=$(echo "$ikoaOutput" | grep -o "部分=\[0\]" | grep -o "0" || echo 1)
+        bitrate=$(echo "$ikoaOutput" | grep -oE '[0-9]+kbps')
+        multipart=$(echo "$ikoaOutput" | grep -oP '(?<=部分=\[)[0-9]+(,[0-9]+)*(?=\])' | awk 'BEGIN {FS=","} {print $NF}')
+        if [[ $FLAG -eq 1 ]]; then
+            if [[ $multipart -eq 0 || $MERGE_BOOL == "true" ]]; then
+                codeQuota=$((codeQuota - 1))
+            else
+                codeQuota=$((codeQuota - multipart))
+            fi
+        fi
         filePath=$(find "$dirArgs" -mindepth 1 -maxdepth 1 -type d -printf '%T@ %p\n' | sort -k1 -r -n | head -1 | cut -d ' ' -f2)
         cid=$(basename "$filePath")
         fileSize=$(du -m "$filePath" | cut -f1)
@@ -126,7 +128,7 @@ for i in "${!idList[@]}"; do
         elapsed=0
         echo "$elapsed" > TIME_VAR.txt
     else
-        test $FLAG -eq 1 && NonMonthlyDownloadCount=$((NonMonthlyDownloadCount + 1));updateWaitTime
+        test $FLAG -eq 1 && codeQuota=$((codeQuota - 1))
         echo "${idList[i]},,${TaskId},failed,,,,${TAG},${isMonthly}" >> "$fileName"
         echo "id:${idList[i]} taskid:${TaskId} status:failed tag:${TAG:-None} Monthly:${isMonthly}"
         elapsed=$((SECONDS - startTime))
@@ -138,17 +140,16 @@ csvOutput=$(awk 'BEGIN {FS=","; OFS=":"; ORS=" "} NR > 1 { array[$4]++; number=n
 taskStatus=$(ts | awk 'BEGIN {OFS=":"; ORS=" "} NR > 1 { array[$2]++;total+=1; } END { for (i in array) print i,array[i]; print "totalTask:" total }')
 
 if [[ -e $fileName && -d backup ]]; then
-    remainCode_end=$(./iKOA -E cid:118abp12345 | grep "剩余")
     totalTask=$(($(ts | wc -l) - 1))
     cp "$fileName" backup
     if [[ $((TaskId + 1)) -eq $totalTask ]]; then
-         echo "All ${totalTask} tasks finished ===>>> ${csvOutput} serialCode:${remainCode_end}."
-         echo "Summary ===>>> ${csvOutput} serialCode:${remainCode_end} totalTask:${totalTask}" >>  "./backup/${fileName}"      
+         echo "All ${totalTask} tasks finished ===>>> ${csvOutput} 序列码额度剩余 ${codeQuota} 次"
+         echo "Summary ===>>> ${csvOutput} 序列码额度剩余 ${codeQuota} 次 totalTask:${totalTask}" >>  "./backup/${fileName}"      
     else
-        echo "Until Now ===>>> ${csvOutput} serialCode:${remainCode_end}"
+        echo "Until Now ===>>> ${csvOutput} 序列码额度剩余 ${codeQuota} 次"
         sleep 3  
         echo "taskStatus ===>>> ${taskStatus}"
-        echo "Until Now ===>>> ${csvOutput} serialCode:${remainCode_end}  ${taskStatus}" >>  "./backup/${fileName}"
+        echo "Until Now ===>>> ${csvOutput} 序列码额度剩余 ${codeQuota} 次 ${taskStatus}" >>  "./backup/${fileName}"
     fi
     rclone --config="$RcloneConf" copy "./backup/${fileName}" "DRIVE:$LOG_PATH"                     
 fi
