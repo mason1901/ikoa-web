@@ -98,44 +98,43 @@ for i in "${!idList[@]}"; do
         cid=$(basename "$filePath")
         fileSize=$(du -m "$filePath" | cut -f1)
         echo "${idList[i]},${cid},${TaskId},succeed,${fileSize}M,${bitrate},${multipart},${TAG},${isMonthly}" >> "$fileName"
-        echo "id:${idList[i]} cid:${cid} taskid:${TaskId} status:succeed size:${fileSize}M bitrate:${bitrate} multipart:${multipart} tag:${TAG:-None} Monthly:${isMonthly}"   
-        if [[ $((DownloadCount % 4)) -eq 0 || $i -eq $((idListLen - 1)) || $codeQuota -lt 45 ]]; then 
-            sleep 2
-            while true
-            do
-                rclone --config="$RcloneConf" move downloads "DRIVE:$RCLONE_DESTINATION" --drive-stop-on-upload-limit --drive-chunk-size 64M --exclude-from rclone-exclude-file.txt -v --stats-one-line --stats=1s
-                rc=$?
-                if [[ $rc -ne 7 ]]; then
-                    break
-                else
-                    if [[ $RcloneConf == "rclone_1.conf" ]]; then
-                        RcloneConf="rclone_2.conf"
-                    else
-                        RcloneConf="rclone_1.conf"
-                    fi
-                fi
-                sleep 10
-            done
-        fi    
-        elapsed=$((SECONDS - startTime))
-        echo "$elapsed" > TIME_VAR.txt
+        echo "id:${idList[i]} cid:${cid} taskid:${TaskId} status:succeed size:${fileSize}M bitrate:${bitrate} multipart:${multipart} tag:${TAG:-None} Monthly:${isMonthly}"         
     elif [[ $ikoaOutput =~ "序列码额度为0" ]]; then
         echo "序列码额度为0，不能下载!"
         break
     elif [[ $ikoaOutput =~ "查询无结果" ]]; then
         echo "${idList[i]},,${TaskId},notfound,,,,${TAG},${isMonthly}" >> "$fileName"
         echo "id:${idList[i]} taskid:${TaskId} status:notfound tag:${TAG:-None} Monthly:${isMonthly}"
-        elapsed=0
-        echo "$elapsed" > TIME_VAR.txt
     else
         test $FLAG -eq 1 && codeQuota=$((codeQuota - 1))
         echo "${idList[i]},,${TaskId},failed,,,,${TAG},${isMonthly}" >> "$fileName"
         echo "id:${idList[i]} taskid:${TaskId} status:failed tag:${TAG:-None} Monthly:${isMonthly}"
-        elapsed=$((SECONDS - startTime))
-        echo "$elapsed" > TIME_VAR.txt
     fi
+    if [[ $((DownloadCount % 4)) -eq 0 || $i -eq $((idListLen - 1)) || $codeQuota -lt 45 ]]; then 
+        sleep 2
+        while true
+        do
+            rclone --config="$RcloneConf" move downloads "DRIVE:$RCLONE_DESTINATION" --drive-stop-on-upload-limit --drive-chunk-size 64M --exclude-from rclone-exclude-file.txt -v --stats-one-line --stats=1s
+            rc=$?
+            if [[ $rc -ne 7 ]]; then
+                break
+            else
+                if [[ $RcloneConf == "rclone_1.conf" ]]; then
+                    RcloneConf="rclone_2.conf"
+                else
+                    RcloneConf="rclone_1.conf"
+                fi
+            fi
+            sleep 10
+        done
+    fi
+    if [[ $ikoaOutput =~ "查询无结果" ]]; then
+        elapsed=0
+    else
+        elapsed=$((SECONDS - startTime))  
+    fi  
+    echo "$elapsed" > TIME_VAR.txt
 done
-
 csvOutput=$(awk 'BEGIN {FS=","; OFS=":"; ORS=" "} NR > 1 { array[$4]++; number=number+1; total=total+$5; } END { printf "ID in all:%d ", number; for (i in array) print i,array[i]; total=total/1024; printf "totalDownload:%.1fG",total }' "$fileName")
 taskStatus=$(ts | awk 'BEGIN {OFS=":"; ORS=" "} NR > 1 { array[$2]++;total+=1; } END { for (i in array) print i,array[i]; print "totalTask:" total }')
 

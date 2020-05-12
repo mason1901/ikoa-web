@@ -130,20 +130,13 @@ def login():
 
 def add_ts_task(id_value, id_type, id_tag):
     TASK.task_index += 1
-
     id_list = id_value.split(',')
-    if len(id_list) <= 12:
-        cmd = 'ts bash task.sh {} {} {} {}'.format(id_value, id_type, TASK.task_id, id_tag)
+    list_group = [id_list[n:n + 12] for n in range(0, len(id_list), 12)]
+    for item in list_group:
+        cmd = 'ts bash task.sh {} {} {} {}'.format(','.join(item), id_type, TASK.task_id, id_tag)
         os.system(cmd)
         TASK.task_queue.append(TASK.task_id)
         TASK.task_id += 1
-    else:
-        list_group = [id_list[n:n+12] for n in range(0, len(id_list), 12)]
-        for item in list_group:
-            cmd = 'ts bash task.sh {} {} {} {}'.format(','.join(item), id_type, TASK.task_id, id_tag)
-            os.system(cmd)
-            TASK.task_queue.append(TASK.task_id)
-            TASK.task_id += 1
 
 
 @APP.route('/', methods=['GET', 'POST'])
