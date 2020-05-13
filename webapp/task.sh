@@ -110,7 +110,7 @@ for i in "${!idList[@]}"; do
         echo "${idList[i]},,${TaskId},failed,,,,${TAG},${isMonthly}" >> "$fileName"
         echo "id:${idList[i]} taskid:${TaskId} status:failed tag:${TAG:-None} Monthly:${isMonthly}"
     fi
-    if [[ $((DownloadCount % 4)) -eq 0 || $i -eq $((idListLen - 1)) || $codeQuota -lt 45 ]]; then 
+    if [[ ($ikoaOutput =~ "已下载" && ($((DownloadCount % 4)) -eq 0 || $codeQuota -lt 45)) || $i -eq $((idListLen - 1)) ]]; then
         sleep 2
         while true
         do
