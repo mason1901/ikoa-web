@@ -41,7 +41,7 @@
         },
         "MERGE_BOOL": {
             "description": "merge if a video containing multiple parts, true or false",
-            "value": "false"
+            "value": "true"
         },
         "MONTHLY_ONLY_BOOL": {
             "description": "Only download videos which belong to monthly, true or false",

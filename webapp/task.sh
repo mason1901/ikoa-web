@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ID=$1
-TYPE=$2
+test "$2" = "mgs" && TYPE="cid" || TYPE=$2
 TaskId=$3
 TAG=$4
 IFS="," read -r -a idList <<< "$ID"

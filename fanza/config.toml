@@ -1,8 +1,8 @@
 # iKOA的配置文件
 
 [download]
-## 序列码
-serial = "DLFO2-MEEZ4-XSC92-GUDQX-ZM5HL"
+## 序列码，将其插入单引号之间
+serial = ''
 ## 下载位置，相对和绝对路径：
 ##  - Windows: D:\test 或 D:/test
 ##  - macOS, Linux: /home/user/test
@@ -20,8 +20,6 @@ miniature = true
 ## = 1; 1个视频结果永不询问；询问是否有多个视频part
 ## = 2; 1个视频结果永不询问；永远不要问是否有多个视频part（下载所有）
 policy = 2
-## motd = <...>; 设置是否不显示“Message of The Day”输出则在屏幕上（每日提示）
-motd = "iKu Original Adult - 2020/03/28"
 ## salesman <true,false>; 仅提示输入一项内容ID
 salesman = false
 ## exit <true,false>; 执行完成后窗口就退出了
@@ -29,15 +27,21 @@ exit = true
 ## beep <true,false>; 在提示选择视频时发出声音（响铃字符）
 beep = false
 
+[aspect]
+## motd = <...>; 设置是否不显示“Message of The Day”输出则在屏幕上（每日提示）
+motd = 'iKu Original Adult 2020.05.18'
+## 显示速度 分片/秒（进度条）
+progressbar_chunkspeed = false
+
 [parts]
 ## 文件{suffix}数.文件扩展（例如：test-1.mp4, test-2.mp4 ..）
 suffix = "-"
 ## 多个视频part合并成一个
-merge = false
+merge = true
 ## 多个视频part合并成一个（M3U文件）
-m3u_merge = false
-## 根据文件名合并part（正则表达式）
-m3u_regex = '(.*?)-(?:[Pp]art-?)?(\d+)'
+m3u_merge = true
+## 根据文件名合并part（正则表达式；在范围内 [0]1-29）
+m3u_regex = '(.*?)-(?:[Pp]art-?)?((?:0?[1-9])|(?:[1-2]\d))$'
 ## 合并之前，检查列出的M3U文件是否互相兼容（只有大咪咪）
 m3u_strict = true
 

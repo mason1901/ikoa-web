@@ -25,10 +25,12 @@ APP.config.update(
 )
 
 
-REGEXNUMSTRING = r"^([a-zA-Z]{1,10}\-[0-9]{1,10})(,([a-zA-Z]{1,10}\-[0-9]{1,10}))*$"
-REGEXCIDSTRING = r"^([\w]{3,20})(,[\w]{3,20})*$"
+REGEXNUMSTRING = r"^[a-zA-Z]{1,10}\-[0-9]{1,10}(?:,[a-zA-Z]{1,10}\-[0-9]{1,10})*$"
+REGEXCIDSTRING = r"^[\w]{3,20}(?:,[\w]{3,20})*$"
+REGEXMGSSTRING = r"^(?:\d{3})?[a-zA-Z]{2,6}-\d{3,5}(?:,(?:\d{3})?[a-zA-Z]{2,6}-\d{3,5})*$"
 REGEXNUM = re.compile(REGEXNUMSTRING)
 REGEXCID = re.compile(REGEXCIDSTRING, flags=re.ASCII)
+REGEXMGS = re.compile(REGEXMGSSTRING)
 
 
 LOGIN_MANAGER = LoginManager()
@@ -71,7 +73,7 @@ class LoginForm(FlaskForm):
 
 
 class DownloadForm(FlaskForm):
-    id_type = SelectField('id_type', choices=[('num', 'num'), ('cid', 'cid')])
+    id_type = SelectField('id_type', choices=[('num', 'num'), ('cid', 'cid'), ('mgs', 'mgs')])
     id_value = StringField('id_value', validators=[DataRequired()])
     id_tag = StringField('id_tag', validators=[Optional(), Regexp(r"^[\w]{1,10}$", message="Invalid tag!")])
     submit = SubmitField('Submit')
@@ -82,12 +84,16 @@ class DownloadForm(FlaskForm):
             if not match_num:
                 raise ValidationError('Invalid num format!')
             return match_num
-        ## self.id_type.data == "cid"
-        else:
+        elif self.id_type.data == "cid":
             match_cid = REGEXCID.match(field.data or "")
             if not match_cid:
                 raise ValidationError('Invalid cid format!')
             return match_cid
+        else:
+            match_mgs = REGEXMGS.match(field.data or "")
+            if not match_mgs:
+                raise ValidationError('Invalid mgs format!')
+            return match_mgs
 
 
 TASK = Task()

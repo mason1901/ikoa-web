@@ -18,6 +18,7 @@
 * Check whether the ID belongs to monthly video before download.  
 * Choose the rclone upload strategy based on the serialCode quota.  
 * Quit the download task if the serialCode quota is zero.  
+* Add support for iKOA version-1.4.5
 
 
 ### Prerequisites:
@@ -41,9 +42,10 @@ Click the button below to deploy to heroku using your own heroku account.
 4. You can update the iKOA version in the folder called fanza(fork the repo first, and replace the iKOA with a newer version,change the repository field in [app.json](app.json), then deploy your own repo to heroku).
 5. The app will be restarted automatically once every 24 hours continuous running due to heroku's policy. [See more details](https://devcenter.heroku.com/articles/dynos#restarting)
 6. the format of num ID:"ABC-123" or "ABC-123,abc-124,ABC-125 and more"(comma separated,case insensitive)
-7. the format of cid ID:"abc00123" or "abc00123,abc00124,abc00125 and more"(comma separated,case insensitive)
-8. If you submit many IDs one time, you can put a tag on these IDs, so they can be downloaded under the same folder.(the tag length should be no more than 10 characters, be free to use chinese or japanese name or any other language)
-9. In theory, ikoa-web can upload no more than 1.5TB data to your google team drive per day.
+7. the format of cid ID:"abc00123" or "abc00123,abc00124,abc00125 and more"(comma separated,case insensitive)  
+8. the format of mgs ID:"259LUXU-1200" or "259LUXU-1200,259LUXU-1201,259LUXU-1202 and more"(comma separated,case insensitive)  
+9. If you submit many IDs one time, you can put a tag on these IDs, so they can be downloaded under the same folder.(the tag length should be no more than 10 characters, be free to use chinese or japanese name or any other language)
+10. In theory, ikoa-web can upload no more than 1.5TB data to your google team drive per day.
 
 
 ### FAQ:

@@ -2,13 +2,13 @@
 
 
 if [[ -n $TEAM_DRIVE_ID && -n $RCLONE_DESTINATION && -n $LOG_PATH && -n $SA_JSON_1 && -n $SA_JSON_2 && -n $SERIAL_CODE && -n $MERGE_BOOL ]]; then
-    sed -i "/^serial/c\serial = \"$SERIAL_CODE\"" /app/fanza/config.toml   
+    sed -i "/^serial/c\serial = \'$SERIAL_CODE\'" /app/fanza/config.toml   
     echo "team_drive = $TEAM_DRIVE_ID" >> /app/fanza/rclone_1.conf
     echo "team_drive = $TEAM_DRIVE_ID" >> /app/fanza/rclone_2.conf
     echo "$SA_JSON_1" > /app/fanza/service_account_1.json
     echo "$SA_JSON_2" > /app/fanza/service_account_2.json
-    if [[ $MERGE_BOOL == "true" ]]; then
-        sed -i "/^merge/c\merge = true" /app/fanza/config.toml
+    if [[ $MERGE_BOOL == "false" ]]; then
+        sed -i -e "/^merge/c\merge = false" -e "/^m3u_merge/c\m3u_merge = false" /app/fanza/config.toml
     fi
 
 else
