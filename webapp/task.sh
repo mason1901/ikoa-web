@@ -65,7 +65,7 @@ for i in "${!idList[@]}"; do
     if [[ $isMonthly == "true" ]]; then
         sleepHandler
         startTime=$SECONDS
-        ikoaOutput=$(./iKOA -E -d "$dirArgs" "$TYPE":"${idList[i]}" | tail)
+        ikoaOutput=$(echo 1 | ./iKOA -E -d "$dirArgs" "$TYPE":"${idList[i]}" | tail)
     elif [[ $isMonthly == "false" ]]; then
         if [[ $MONTHLY_ONLY_BOOL == "true" ]]; then
             echo "id:${idList[i]} taskid:${TaskId} status:pass tag:${TAG:-None} Monthly:${isMonthly}"
@@ -74,7 +74,7 @@ for i in "${!idList[@]}"; do
         else
             sleepHandler
             startTime=$SECONDS
-            ikoaOutput=$(./iKOA -E -d "$dirArgs" "$TYPE":"${idList[i]}" | tail)
+            ikoaOutput=$(echo 1 | ./iKOA -E -d "$dirArgs" "$TYPE":"${idList[i]}" | tail)
             FLAG=1         
         fi
     else
