@@ -216,7 +216,7 @@ def logging_error_handler(error):
 
 
 @APP.errorhandler(404)
-def page_not_found():
+def page_not_found(error):
     return "Page not found!"
 
 
