@@ -1,6 +1,7 @@
 import os
 import subprocess
 import re
+import time
 from threading import Lock
 from collections import deque
 import requests
@@ -177,6 +178,15 @@ def push_log():
     TASK.pushlog_finished = False
     while len(TASK.task_queue) > 0:
         task_id = TASK.task_queue.popleft()
+        job_status = subprocess.check_output("ts -s {}".format(task_id),
+                                             shell=True, universal_newlines=True)
+        if job_status.strip() == 'queued':
+            TASK.task_queue.appendleft(task_id)
+            time.sleep(60)
+            continue
+        if job_status.strip() == 'skipped':
+            continue
+
         with subprocess.Popen(['ts', '-c', str(task_id)], stdout=subprocess.PIPE,
                               stderr=subprocess.STDOUT, universal_newlines=True) as process:
             for line in process.stdout:
