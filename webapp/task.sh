@@ -14,8 +14,13 @@ codeQuota=$(./iKOA -E cid:118abp12345 | grep -oP '(?<=剩余\s)[0-9]+(?=\s次)')
 if [[ $codeQuota -gt 0 ]]; then
     echo "序列码额度剩余 ${codeQuota} 次"
 else
-    echo "序列码额度为0，不能下载!"
-    exit 1
+    if [[ $PROMOTION == "true" ]]; then
+        codeQuota=1000000
+        echo "活动期间：无需额度即可下载月额!"
+    else
+        echo "序列码额度为0，不能下载!"
+        exit 1
+    fi
 fi
 
 updateWaitTime() {
@@ -25,8 +30,10 @@ updateWaitTime() {
         waitTime=1800
     elif [[ $codeQuota -ge 45 && $codeQuota -lt 90 ]]; then
         waitTime=300
-    elif [[ $codeQuota -ge 90 ]]; then
+    elif [[ $codeQuota -ge 90 && $codeQuota -lt 10000 ]]; then
         waitTime=0
+    elif [[ $codeQuota -ge 10000 ]]; then
+        waitTime=600
     else
         echo "序列码额度为0，不能下载!"
         exit 1
@@ -59,13 +66,16 @@ test -n "$TAG" && dirArgs="downloads/${TAG}" || dirArgs="downloads"
 for i in "${!idList[@]}"; do
     FLAG=0
     sleep 2
-    isMonthly=$(curl -sL --retry 5 "https://v2.mahuateng.cf/isMonthly/${idList[i]}" | grep -oP '(?<=\"monthly\":)(true|false)(?=\,)' || echo "queryfailed")
+    query=$(curl -sL --retry 5 "https://v2.mahuateng.cf/isMonthly/${idList[i]}")
+    querybitrate=$(echo "$query" | grep -oP '(?<=\"bitrate\":)[0-9]+(?=\.0,)' || echo 0)
+    [[ $querybitrate -gt 0 && $querybitrate -lt 100 ]] && choice=2 || choice=1
+    isMonthly=$(echo "$query" | grep -oP '(?<=\"monthly\":)(true|false)(?=\,)' || echo "queryfailed")
     echo "Current id:${idList[i]} taskid:${TaskId} Current task progress:$((i + 1))/${idListLen} tag:${TAG:-None} Monthly:${isMonthly}"
     sleep 1
     if [[ $isMonthly == "true" ]]; then
         sleepHandler
         startTime=$SECONDS
-        ikoaOutput=$(echo 1 | ./iKOA -E -d "$dirArgs" "$TYPE":"${idList[i]}" | tail)
+        ikoaOutput=$(echo "$choice" | ./iKOA -E -d "$dirArgs" "$TYPE":"${idList[i]}" | tail)
     elif [[ $isMonthly == "false" ]]; then
         if [[ $MONTHLY_ONLY_BOOL == "true" ]]; then
             echo "id:${idList[i]} taskid:${TaskId} status:pass tag:${TAG:-None} Monthly:${isMonthly}"
@@ -74,7 +84,7 @@ for i in "${!idList[@]}"; do
         else
             sleepHandler
             startTime=$SECONDS
-            ikoaOutput=$(echo 1 | ./iKOA -E -d "$dirArgs" "$TYPE":"${idList[i]}" | tail)
+            ikoaOutput=$(echo "$choice" | ./iKOA -E -d "$dirArgs" "$TYPE":"${idList[i]}" | tail)
             FLAG=1         
         fi
     else

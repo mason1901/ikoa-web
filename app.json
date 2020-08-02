@@ -46,6 +46,10 @@
         "MONTHLY_ONLY_BOOL": {
             "description": "Only download videos which belong to monthly, true or false",
             "value": "true"
+        },
+        "PROMOTION": {
+            "description": "Is there a promotion for ikoa?",
+            "value": "false"
         }
 
     },
