@@ -48,8 +48,12 @@
             "value": "true"
         },
         "PROMOTION": {
-            "description": "Is there a promotion for ikoa?",
+            "description": "Is there a promotion for ikoa? (true or false)",
             "value": "false"
+        },
+        "OUTPUT_FILENAME": {
+            "description": "Choose a format to naming the downloaded file, pid or cid or num.",
+            "value": "cid"
         }
 
     },

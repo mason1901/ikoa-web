@@ -56,7 +56,7 @@ sleepHandler() {
 
 if [[ $TaskId -eq 0 ]]; then
     NAME="$(date +"%Y-%m-%dT%H:%M:%SZ")-download_info.csv"
-    echo "id,cid,taskid,status,size,bitrate,multipart,tag,monthly" >> "$NAME"
+    echo "id,name,taskid,status,size,bitrate,multipart,tag,monthly" >> "$NAME"
     echo "$NAME" > FILENAME_VAR.txt
     mkdir -p backup
 fi
@@ -67,15 +67,13 @@ for i in "${!idList[@]}"; do
     FLAG=0
     sleep 2
     query=$(curl -sL --retry 5 "https://v2.mahuateng.cf/isMonthly/${idList[i]}")
-    querybitrate=$(echo "$query" | grep -oP '(?<=\"bitrate\":)[0-9]+(?=\.0,)' || echo 0)
-    [[ $querybitrate -gt 0 && $querybitrate -lt 100 ]] && choice=2 || choice=1
     isMonthly=$(echo "$query" | grep -oP '(?<=\"monthly\":)(true|false)(?=\,)' || echo "queryfailed")
     echo "Current id:${idList[i]} taskid:${TaskId} Current task progress:$((i + 1))/${idListLen} tag:${TAG:-None} Monthly:${isMonthly}"
     sleep 1
     if [[ $isMonthly == "true" ]]; then
         sleepHandler
         startTime=$SECONDS
-        ikoaOutput=$(echo "$choice" | ./iKOA -E -d "$dirArgs" "$TYPE":"${idList[i]}" | tail)
+        ikoaOutput=$(./iKOA -E -d "$dirArgs" "$TYPE":"${idList[i]}" | tail)
     elif [[ $isMonthly == "false" ]]; then
         if [[ $MONTHLY_ONLY_BOOL == "true" ]]; then
             echo "id:${idList[i]} taskid:${TaskId} status:pass tag:${TAG:-None} Monthly:${isMonthly}"
@@ -84,7 +82,7 @@ for i in "${!idList[@]}"; do
         else
             sleepHandler
             startTime=$SECONDS
-            ikoaOutput=$(echo "$choice" | ./iKOA -E -d "$dirArgs" "$TYPE":"${idList[i]}" | tail)
+            ikoaOutput=$(./iKOA -E -d "$dirArgs" "$TYPE":"${idList[i]}" | tail)
             FLAG=1         
         fi
     else
@@ -105,10 +103,10 @@ for i in "${!idList[@]}"; do
             fi
         fi
         filePath=$(find "$dirArgs" -mindepth 1 -maxdepth 1 -type d -printf '%T@ %p\n' | sort -k1 -r -n | head -1 | cut -d ' ' -f2)
-        cid=$(basename "$filePath")
+        name=$(basename "$filePath")
         fileSize=$(du -m "$filePath" | cut -f1)
-        echo "${idList[i]},${cid},${TaskId},succeed,${fileSize}M,${bitrate},${multipart},${TAG},${isMonthly}" >> "$fileName"
-        echo "id:${idList[i]} cid:${cid} taskid:${TaskId} status:succeed size:${fileSize}M bitrate:${bitrate} multipart:${multipart} tag:${TAG:-None} Monthly:${isMonthly}"         
+        echo "${idList[i]},${name},${TaskId},succeed,${fileSize}M,${bitrate},${multipart},${TAG},${isMonthly}" >> "$fileName"
+        echo "id:${idList[i]} name:${name} taskid:${TaskId} status:succeed size:${fileSize}M bitrate:${bitrate} multipart:${multipart} tag:${TAG:-None} Monthly:${isMonthly}"         
     elif [[ $ikoaOutput =~ "序列码额度为0" ]]; then
         echo "序列码额度为0，不能下载!"
         break

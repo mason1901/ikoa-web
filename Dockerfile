@@ -22,6 +22,7 @@ RUN apk update && apk add --no-cache \
     curl \
     rclone \
     zlib \
+    libgcc \
     ts \
     openssh && \
     apk add --no-cache --virtual .build-dependencies \

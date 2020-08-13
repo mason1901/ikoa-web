@@ -1,11 +1,23 @@
 # iKOA的配置文件
 
+## 这是一个TOML文档
+## 检查TOML语法 https://toml.io/cn/
+
+#  是注释掉的选项
+## 是关于以下选项的评论
+
+## <?-?> 是允许值范围
+## [?] 是默认值，可以省略
+## 无效值可以替换为默认值 (0, -1, '' ...)
+
 [download]
 ## 序列码，将其插入单引号之间
 serial = ''
 ## 下载位置，相对和绝对路径：
 ##  - Windows: D:\test 或 D:/test
 ##  - macOS, Linux: /home/user/test
+##  - all: '~/test'
+## 如果是相对路径，则是相对于配置文件的路径
 path = 'downloads'
 ## 创建子文件夹
 subfolder = true
@@ -13,6 +25,28 @@ subfolder = true
 cover = true
 ## 下载封面图片（小）
 miniature = true
+## NONE: 不要下载字幕
+## FIFO: 下载符合所选条件的第一个字幕文件
+## ALL:  下载全部可以找到的字幕文件
+subtitle = 'ALL'
+## 字幕语言下载顺序，使用字符 | 作为分隔符
+## 大部分字幕都有中文或英文。 有些字幕可能会用自动工具翻译或转写。
+## en:      英语 (English)
+## ja:      日语 (Japanese)
+## zh-Hans: 简体 (Simplified Chinese)
+## zh-Hant: 繁体 (Traditional Chinese)
+## th:      泰语 (Thai)
+## ko:      韩语 (Korean)
+## ms:      马来语 (Malay)
+## id:      印度尼西亚语 (Indonesian)
+## vi:      越南语 (Vietnamese)
+## fr:      法语 (French)
+## ru:      俄语 (Russian)
+## es:      西班牙语 (Spanish)
+## hi:      印度语 (Hindi)
+subtitle_lang = 'zh-Hans|zh-Hant|en|ja'
+## 将字幕转换为UTF-8格式
+subtitle_utf8 = false
 
 [behavior]
 ## policy <0-2>; 行为准则
@@ -26,16 +60,29 @@ salesman = false
 exit = true
 ## beep <true,false>; 在提示选择视频时发出声音（响铃字符）
 beep = false
+## 如果存储空间少于。。 时不要继续下载 (GB)
+exit_if_space_less = 20
+## 预取所有查询结果
+## NONE: 不要订购结果
+## ASC:  先用较少的结果来排序
+## DESC: 先用更多的结果来排序
+prefetch_results = 'NONE'
+## pick_best <true,false>; 自动选择比特率最高的视频
+pick_best = true
+## shutdown_on_complete <true,false>; 下载完成后关机（仅 Windows 和 Ubuntu 15.04+）
+shutdown_on_complete = false
 
 [aspect]
 ## motd = <...>; 设置是否不显示“Message of The Day”输出则在屏幕上（每日提示）
-motd = 'iKu Original Adult 2020.05.18'
+motd = 'iKu Original Adult 2020.08.01'
 ## 显示速度 分片/秒（进度条）
 progressbar_chunkspeed = false
+## 显示可用空间
+display_freespace = true
 
 [parts]
 ## 文件{suffix}数.文件扩展（例如：test-1.mp4, test-2.mp4 ..）
-suffix = "-"
+suffix = '-'
 ## 多个视频part合并成一个
 merge = true
 ## 多个视频part合并成一个（M3U文件）
@@ -46,28 +93,49 @@ m3u_regex = '(.*?)-(?:[Pp]art-?)?((?:0?[1-9])|(?:[1-2]\d))$'
 m3u_strict = true
 
 [output]
-## 无损视频格式：mp4（或 mkv 测试版功能）
-video_format = "mp4"
+## cid 或 pid 或 num（DVD-ID，推断）
+filename = 'pid'
+## 无损视频格式：mp4 或 mkv 或 raw (= ts = mpegts)
+video_format = 'mp4'
+## 下载引擎：concurrent 或 consecutive
+## concurrent ：iKOA会边下载边编码
+## consecutive：下载完毕后，iKOA 才会进行编码（双重处理）
+## -> 默认值：concurrent
+encoding_engine = 'concurrent'
+## 如果引擎concurrent存在问题，用引擎consecutive作为后备
+encoding_engine_fallback = true
+## 选择consecutive引擎时不要删除.ts文件
+preserve_raw_file = false
 ## 将moov atom移动到文件顶部，仅 mp4 (ffmpeg: -movflags +faststart)
 web_optimized = true
 ## 测试版功能：给视频文件添加封面（仅 mp4 和 mkv 格式）
 cover_art = true
 ## 测试版功能：移除大咪咪电影封面中的两侧白边框 (147x200)
 crop_cover_art = true
+## 写日志文件
+chunk_log = false
 ## 将FFmpeg命令的输出记录到文件中
 ffmpeg_log = false
+## <1000000-..> 设为 < 1000000，FFmpeg会自动用默认值; 从源文件中读取的最大秒数，单位为秒
+## FFmpeg的默认是7秒
+## -> 默认值：10000000 是 10秒
+ffmpeg_analyzeduration = 10000000
+## <32-..> 设为 < 32，FFmpeg会自动用默认值; 从源文件中读取的最大字节数，单位为字节
+## FFmpeg的默认是5000000字节
+## -> 默认值：10000000 是 10MB
+ffmpeg_probesize = 10000000
 
 [connection]
 ## job <1-99>; 同时下载数量
 ## 值太高可能会减慢下载速度
 ## 视频高清（3MB 分片）：16 (~50 MB/s), 32 (~100 MB/s)
-## -> 默认值：16
+## -> 默认值：12
 job = 32
-## buffer <1-..>; 视频码流缓冲区的大小（分片数量）
+## buffer <1-..> 设为0，iKOA会自动用默认值; 视频码流缓冲区的大小（分片数量）
 ## 高达视频缓冲时，下载器可容纳多少个分片
 ## 这个值是跟同时下载数量 {job} 相关的
 ## 每个分片通常是3MB，要是这个值是32的话，缓冲区会高达 3MB * 32 = 96MB
-## -> 默认值：2 * {job} + {job} / 2
+## -> 默认值：0 是 2 * {job} + {job} / 2
 buffer = 0
 ## timeout <1-99>; 单次请求超时时间的秒数
 timeout = 15
@@ -76,12 +144,14 @@ retry = 30
 ## backoff <0.0-BACKOFF_MAX>; 退避系数
 ## 等待的秒数第一次失败之后根据公式：
 ## 等待的秒数 = {backoff} * (2 ** ({次数} - 1))
-## -> 默认值： 0.1 = [0.1秒, 0.2秒, 0.4秒 。。]
+## -> 默认值： 0.1 是 [0.1秒, 0.2秒, 0.4秒 。。]
 backoff = 0.1
+## 使用伪随机用户代理
+random_ua = true
 
 [proxy]
 ## proxy [socks5://][127.0.0.1:]<1-65535>; 代理
 ## 协议：socks4, socks5, http, https
-socket = "socks5://127.0.0.1:9000"
+socket = 'socks5://127.0.0.1:9000'
 ## 设置是否启用代理
 enable = false

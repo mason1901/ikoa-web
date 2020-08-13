@@ -10,7 +10,9 @@ if [[ -n $TEAM_DRIVE_ID && -n $RCLONE_DESTINATION && -n $LOG_PATH && -n $SA_JSON
     if [[ $MERGE_BOOL == "false" ]]; then
         sed -i -e "/^merge/c\merge = false" -e "/^m3u_merge/c\m3u_merge = false" /app/fanza/config.toml
     fi
-
+    if [[ $OUTPUT_FILENAME == "pid" || $OUTPUT_FILENAME == "num" ]]; then
+        sed -i "/^filename/c\filename = \'$OUTPUT_FILENAME\'" /app/fanza/config.toml  
+    fi
 else
     echo "Warning: Please make sure there exist all of the needed config vars!"
     exit 1
