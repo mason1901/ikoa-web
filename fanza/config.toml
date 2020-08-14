@@ -94,7 +94,7 @@ m3u_strict = true
 
 [output]
 ## cid 或 pid 或 num（DVD-ID，推断）
-filename = 'pid'
+filename = 'cid'
 ## 无损视频格式：mp4 或 mkv 或 raw (= ts = mpegts)
 video_format = 'mp4'
 ## 下载引擎：concurrent 或 consecutive
@@ -130,7 +130,7 @@ ffmpeg_probesize = 10000000
 ## 值太高可能会减慢下载速度
 ## 视频高清（3MB 分片）：16 (~50 MB/s), 32 (~100 MB/s)
 ## -> 默认值：12
-job = 32
+job = 16
 ## buffer <1-..> 设为0，iKOA会自动用默认值; 视频码流缓冲区的大小（分片数量）
 ## 高达视频缓冲时，下载器可容纳多少个分片
 ## 这个值是跟同时下载数量 {job} 相关的
