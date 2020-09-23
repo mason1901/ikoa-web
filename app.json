@@ -6,7 +6,7 @@
         "iKOA",
         "google drive"
     ],
-    "repository": "https://github.com/mason1901/ikoa-web",
+    "repository": "https://github.com/chhayse7en/ikoa-web",
     "env": {
         "TEAM_DRIVE_ID": {
             "description": "the ID of the team drive"
