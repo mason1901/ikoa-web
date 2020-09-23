@@ -47,6 +47,8 @@ subtitle = 'ALL'
 subtitle_lang = 'zh-Hans|zh-Hant|en|ja'
 ## 将字幕转换为UTF-8格式
 subtitle_utf8 = false
+## 等待网络爬虫程序完成图像和字幕的下载，然后再开始
+await_scraper = false
 
 [behavior]
 ## policy <0-2>; 行为准则
@@ -74,7 +76,7 @@ shutdown_on_complete = false
 
 [aspect]
 ## motd = <...>; 设置是否不显示“Message of The Day”输出则在屏幕上（每日提示）
-motd = 'iKu Original Adult 2020.08.01'
+#motd = 'iKu Original Adult 2020.09.07'
 ## 显示速度 分片/秒（进度条）
 progressbar_chunkspeed = false
 ## 显示可用空间
@@ -129,7 +131,7 @@ ffmpeg_probesize = 10000000
 ## job <1-99>; 同时下载数量
 ## 值太高可能会减慢下载速度
 ## 视频高清（3MB 分片）：16 (~50 MB/s), 32 (~100 MB/s)
-## -> 默认值：12
+## -> 默认值：20
 job = 16
 ## buffer <1-..> 设为0，iKOA会自动用默认值; 视频码流缓冲区的大小（分片数量）
 ## 高达视频缓冲时，下载器可容纳多少个分片
@@ -140,7 +142,9 @@ buffer = 0
 ## timeout <1-99>; 单次请求超时时间的秒数
 timeout = 15
 ## retry <0-99>; 最大尝试次数
-retry = 30
+retry = 15
+## retry <0-MAX_INT>; HTTP 404错误的最大尝试次数
+retry_on_404 = 15
 ## backoff <0.0-BACKOFF_MAX>; 退避系数
 ## 等待的秒数第一次失败之后根据公式：
 ## 等待的秒数 = {backoff} * (2 ** ({次数} - 1))
