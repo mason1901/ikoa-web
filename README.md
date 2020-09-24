@@ -18,8 +18,8 @@
 * Check whether the ID belongs to monthly video before download.  
 * Choose the rclone upload strategy based on the serialCode quota.  
 * Quit the download task if the serialCode quota is zero.  
-* ~~Add support for iKOA version-1.4.5~~
-* Add support for iKOA version-1.5.2  
+* ~~Add support for iKOA version-1.5.2~~ 
+* Add support for iKOA version-1.6.1  
 
 
 ### Prerequisites:

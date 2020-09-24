@@ -1,4 +1,5 @@
 # iKOA的配置文件
+# 以下配置为推荐配置
 
 ## 这是一个TOML文档
 ## 检查TOML语法 https://toml.io/cn/
@@ -28,7 +29,7 @@ miniature = true
 ## NONE: 不要下载字幕
 ## FIFO: 下载符合所选条件的第一个字幕文件
 ## ALL:  下载全部可以找到的字幕文件
-subtitle = 'ALL'
+subtitle = 'NONE'
 ## 字幕语言下载顺序，使用字符 | 作为分隔符
 ## 大部分字幕都有中文或英文。 有些字幕可能会用自动工具翻译或转写。
 ## en:      英语 (English)
@@ -47,6 +48,9 @@ subtitle = 'ALL'
 subtitle_lang = 'zh-Hans|zh-Hant|en|ja'
 ## 将字幕转换为UTF-8格式
 subtitle_utf8 = false
+## 等待网络爬虫程序完成图像和字幕的下载，然后再开始
+await_scraper = false
+
 
 [behavior]
 ## policy <0-2>; 行为准则
@@ -74,7 +78,7 @@ shutdown_on_complete = false
 
 [aspect]
 ## motd = <...>; 设置是否不显示“Message of The Day”输出则在屏幕上（每日提示）
-motd = 'iKu Original Adult 2020.08.01'
+motd = 'iKu Original Adult 2020.09.07'
 ## 显示速度 分片/秒（进度条）
 progressbar_chunkspeed = false
 ## 显示可用空间
@@ -107,7 +111,7 @@ encoding_engine_fallback = true
 ## 选择consecutive引擎时不要删除.ts文件
 preserve_raw_file = false
 ## 将moov atom移动到文件顶部，仅 mp4 (ffmpeg: -movflags +faststart)
-web_optimized = true
+web_optimized = false
 ## 测试版功能：给视频文件添加封面（仅 mp4 和 mkv 格式）
 cover_art = true
 ## 测试版功能：移除大咪咪电影封面中的两侧白边框 (147x200)
@@ -141,6 +145,8 @@ buffer = 0
 timeout = 15
 ## retry <0-99>; 最大尝试次数
 retry = 30
+## retry <0-MAX_INT>; HTTP 404错误的最大尝试次数
+retry_on_404 = 15
 ## backoff <0.0-BACKOFF_MAX>; 退避系数
 ## 等待的秒数第一次失败之后根据公式：
 ## 等待的秒数 = {backoff} * (2 ** ({次数} - 1))
